@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.backend.migrator.name }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: 4
+  template:
+    metadata:
+      labels:
+        date: "{{ now | unixEpoch }}"
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: {{ .Values.backend.migrator.name }}
+          image: {{ .Values.backend.migrator.image }}
+          imagePullPolicy: Always
+          env:
+            - name: CONNECTION_STRING
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.backend.name }}
+                  key: CONNECTION_STRING
+            - name: APP_ADDRESS
+              value: {{ .Values.backend.name }}:{{ .Values.backend.port }}

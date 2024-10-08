@@ -1,0 +1,29 @@
+address: help-desk-tg-bot.ru
+
+backend:
+  name: currency-converter-backend
+  port: 8080
+  image: jasonstathamdev/currency-converter:backend
+  migrator:
+    name: currency-converter-backend-migrator
+    image: jasonstathamdev/currency-converter:backend-migrator
+  database:
+    name: currency-converter-backend-database
+    port: 5432
+    path: /data/currency-converter/db 
+
+frontend:
+  name: currency-converter-frontend
+  port: 3000
+  image: jasonstathamdev/currency-converter:frontend
+
+ingress:
+  name: currency-converter-ingress
+  issuer: currency-converter-prod
+  secret: currency-converter-secret
+
+imageServer:
+  name: currency-converter-image-server
+  port: 80
+  nginxConfig: image-server-nginx
+  location: /data/currency-converter/images

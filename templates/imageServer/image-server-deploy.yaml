@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.imageServer.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.imageServer.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.imageServer.name }}
+    spec:
+      containers:
+        - name: {{ .Values.imageServer.name }}
+          image: nginx:bookworm
+          ports:
+            - containerPort: {{ .Values.imageServer.port }}
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/default.conf
+              name: image-server-config-vol
+              subPath: nginx.conf
+            - mountPath: /images
+              name: images-vol
+              readOnly: true
+      volumes:
+        - name: image-server-config-vol
+          configMap:
+            name: {{ .Values.imageServer.nginxConfig }}
+        - name: images-vol
+          hostPath:
+            path: {{ .Values.imageServer.location }}

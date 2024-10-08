@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.imageServer.name }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.imageServer.port }}
+      targetPort: {{ .Values.imageServer.port }}
+  selector:
+    app: {{ .Values.imageServer.name }}

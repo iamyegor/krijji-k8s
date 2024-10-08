@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.backend.database.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.backend.database.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.backend.database.name }}
+    spec:
+      volumes:
+        - name: {{ .Values.backend.database.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.backend.database.name }}
+      terminationGracePeriodSeconds: 1
+      containers:
+        - name: {{ .Values.backend.database.name }}
+          image: postgres:16
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: {{ .Values.backend.database.name }}
+          ports:
+            - containerPort: {{ .Values.backend.database.port }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.backend.database.name }}
